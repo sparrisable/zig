@@ -136,7 +136,14 @@ test "const number literal" {
 }
 const ten = 10;
 
-
+test "number literal separators" {
+    assert(1 == 1_);
+    assert(1___________________2 == 12);
+    assert(0x1234_1234__1234_1234 == 0x1234123412341234);
+    assert(0x123_456_789___._123p1_023 == 0x123456789.123p1023);
+    assert(0b1001_0001 == 0b10010001);
+    assert(0o755644000== 0o755_644_000);
+}
 
 test "unsigned wrapping" {
     testUnsignedWrappingEval(@maxValue(u32));

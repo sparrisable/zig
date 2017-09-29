@@ -2153,4 +2153,9 @@ pub fn addCases(cases: &tests.CompileErrorContext) {
         \\}
     ,
         ".tmp_source.zig:14:17: error: use of undeclared identifier 'HeaderValue'");
+
+    cases.add("numeric literal separator before radix",
+        \\const a = 0_x10;
+    ,
+        ".tmp_source.zig:1:11: error: invalid character: 'x'");
 }

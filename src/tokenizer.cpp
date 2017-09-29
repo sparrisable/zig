@@ -101,6 +101,8 @@
     ALPHA: \
     case '_'
 
+#define NUMERIC_LIT_SEP '_'
+
 struct ZigKeyword {
     const char *text;
     TokenId token_id;
@@ -1186,6 +1188,10 @@ void tokenize(Buf *buf, Tokenization *out) {
                         set_token_id(&t, t.cur_tok, TokenIdFloatLiteral);
                         break;
                     }
+                    if (c == NUMERIC_LIT_SEP) {
+                        break;
+                    }
+
                     uint32_t digit_value = get_digit_value(c);
                     if (digit_value >= t.radix) {
                         if (is_symbol_char(c)) {
@@ -1230,6 +1236,10 @@ void tokenize(Buf *buf, Tokenization *out) {
                         t.state = TokenizeStateFloatExponentUnsigned;
                         break;
                     }
+                    if (c == NUMERIC_LIT_SEP) {
+                        break;
+                    }
+
                     uint32_t digit_value = get_digit_value(c);
                     if (digit_value >= t.radix) {
                         if (is_symbol_char(c)) {
@@ -1279,6 +1289,10 @@ void tokenize(Buf *buf, Tokenization *out) {
                 break;
             case TokenizeStateFloatExponentNumber:
                 {
+                    if (c == NUMERIC_LIT_SEP) {
+                        break;
+                    }
+
                     uint32_t digit_value = get_digit_value(c);
                     if (digit_value >= t.radix) {
                         if (is_symbol_char(c)) {

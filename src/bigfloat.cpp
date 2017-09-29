@@ -61,13 +61,23 @@ void bigfloat_init_bigint(BigFloat *dest, const BigInt *op) {
     }
 }
 
-int bigfloat_init_buf_base10(BigFloat *dest, const uint8_t *buf_ptr, size_t buf_len) {
-    char *str_begin = (char *)buf_ptr;
-    char *str_end;
+int bigfloat_init_buf_base10(BigFloat *dest, const uint8_t *b_start, size_t b_len) {
+    // NOTE: We will not need to know about this when parsing is performed by tokenizer.
+    const char NUMERIC_LIT_SEP = '_';
+
+    Buf *filtered = buf_alloc();
+    for (size_t i = 0; i < b_len; ++i) {
+        if (b_start[i] != NUMERIC_LIT_SEP) {
+            buf_append_char(filtered, b_start[i]);
+        }
+    }
 
     errno = 0;
-    double value = strtod(str_begin, &str_end); // TODO actual f128 parsing
+    char *str_end;
+    double value = strtod(buf_ptr(filtered), &str_end); // TODO actual f128 parsing
+
     if (errno) {
+        buf_deinit(filtered);
         return ErrorOverflow;
     }
 
@@ -75,7 +85,8 @@ int bigfloat_init_buf_base10(BigFloat *dest, const uint8_t *buf_ptr, size_t buf_
     memcpy(&value_f64, &value, sizeof(double));
     f64_to_f128M(value_f64, &dest->value);
 
-    assert(str_end <= ((char*)buf_ptr) + buf_len);
+    assert(str_end <= (char*) buf_ptr(filtered) + buf_len(filtered));
+    buf_deinit(filtered);
     return 0;
 }
 
