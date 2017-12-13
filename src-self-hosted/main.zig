@@ -9,6 +9,7 @@ const Token = @import("tokenizer.zig").Token;
 const Parser = @import("parser.zig").Parser;
 const assert = std.debug.assert;
 const target = @import("target.zig");
+const Module = @import("module.zig").Module;
 
 pub fn main() -> %void {
     main2() %% |err| {
@@ -18,10 +19,7 @@ pub fn main() -> %void {
 }
 
 pub fn main2() -> %void {
-    var incrementing_allocator = %return heap.IncrementingAllocator.init(10 * 1024 * 1024);
-    defer incrementing_allocator.deinit();
-
-    const allocator = &incrementing_allocator.allocator;
+    const allocator = std.heap.c_allocator;
 
     const args = %return os.argsAlloc(allocator);
     defer os.argsFree(allocator, args);
@@ -66,6 +64,14 @@ pub fn main2() -> %void {
 
     warn("====fmt:====\n");
     %return parser.renderSource(out_stream, root_node);
+
+    warn("====ir:====\n");
+    warn("TODO\n\n");
+
+    warn("====llvm ir:====\n");
+    var module = %return Module.init(allocator, "foo");
+    defer module.deinit();
+    module.dump();
 }
 
 test "import other tests" {
